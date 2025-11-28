@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.1231 0.0598 262.59);
+  --sidebar: oklch(0.1524 0.0598 262.59);
+}
+
+body {
+  background-color: var(--background);
+}
+
+.main-content-area {
+  width: 100%;
+  min-height: 100vh;
+}
