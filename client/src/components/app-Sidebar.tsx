@@ -1,8 +1,6 @@
-import React from 'react'
 import { 
   Sidebar, 
   SidebarContent, 
-  SidebarGroup, 
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
