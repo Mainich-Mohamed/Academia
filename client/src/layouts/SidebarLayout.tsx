@@ -8,9 +8,9 @@ interface SidebarLayoutProps {
 }
 
 export default function Sidebar({ children }: SidebarLayoutProps) {
-  const [activeView, setActiveView] = useState<"home" | "library" | "settings">("home");
+  const [activeView, setActiveView] = useState<"home" | "library" | "pomodoro" | "settings">("home");
 
-  const handleViewChange = (view: "home" | "library" | "settings") => {
+  const handleViewChange = (view: "home" | "library" | "pomodoro" | "settings") => {
     setActiveView(view);
     navToPath(view);
   };
@@ -18,7 +18,7 @@ export default function Sidebar({ children }: SidebarLayoutProps) {
   const navToPath = ({ view }: any) => {
     view === "home" ? <NavLink to="/" /> : (
       view === "library" ? <NavLink to="/library" /> 
-      : <NavLink to="/settings" />
+      : (view === "pomodoro" ? <NavLink to="/pomodoro" /> :<NavLink to="/settings" />)
     )
   }
 

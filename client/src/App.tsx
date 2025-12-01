@@ -10,6 +10,7 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/library' element="" />
+        <Route path='/pomodoro' element="" />
         <Route path='/settings' element="" />
       </Routes>
     </>

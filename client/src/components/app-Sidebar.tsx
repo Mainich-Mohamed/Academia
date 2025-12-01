@@ -7,17 +7,18 @@ import {
   SidebarMenuButton,
   SidebarFooter
 } from './ui/sidebar'
-import { Home, Library, Settings, SparklesIcon } from 'lucide-react';
+import { Home, Library, Settings, SparklesIcon, TimerIcon } from 'lucide-react';
 
 interface SidebarProps {
-  activeView: "home" | "library" | "settings";
-  onViewChange: (view: "home" | "library" | "settings") => void;
+  activeView: "home" | "library" | "pomodoro" | "settings";
+  onViewChange: (view: "home" | "library" | "pomodoro" | "settings") => void;
 }
 
 function AppSidebar({ activeView, onViewChange }: SidebarProps) {
   const navItems = [
     { id: "home", icon: Home, label: "Home" },
     { id: "library", icon: Library, label: "Library" },
+    { id: "pomodoro", icon: TimerIcon, label: "Pomodoro"},
     { id: "settings", icon: Settings, label: "Settings"}
   ] as const;
 
