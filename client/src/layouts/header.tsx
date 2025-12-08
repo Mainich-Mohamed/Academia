@@ -6,7 +6,7 @@ const Header = () => {
   const userInitials = username.split(' ').map(n => n[0]).join('').toUpperCase()
 
   return (
-    <header className="bg-background px-10 py-8">
+    <header className="bg-background">
       <div className="flex items-center justify-between mx-auto">
         {/* App Name */}
         <h1 className="text-2xl font-bold text-foreground">
