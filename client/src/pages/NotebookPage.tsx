@@ -1,5 +1,5 @@
 import FoldersList from '@/features/notebooks/components/FoldersList'
-import Quotations from '@/features/notebooks/components/quotations'
+import Quotations from '@/features/notebooks/components/Quotations'
 import Header from '@/layouts/header'
 import React from 'react'
 
