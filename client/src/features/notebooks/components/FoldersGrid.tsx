@@ -1,8 +1,10 @@
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, MoreVerticalIcon, EditIcon, TrashIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 interface Folder {
@@ -19,6 +21,9 @@ function FoldersGrid() {
   })
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [newFolderName, setNewFolderName] = useState<string>('');
+  const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
+  const [editFolderName, setEditFolderName] = useState<string>('');
+  const [folderToDelete, setFolderToDelete] = useState<string | null>(null);
   const [maxColsPerRow, setMaxColsPerRow] = useState<number>(1); 
 
   // Calculate max columns based on screen size when component mounts and on window resize
@@ -26,7 +31,6 @@ function FoldersGrid() {
     const handleResize = () => {
       if (typeof window !== 'undefined') {
         const screenWidth = window.innerWidth;
-
         if (screenWidth < 768) { // Mobile
           setMaxColsPerRow(2);
         } else if (screenWidth < 1024) { // Tablet
@@ -36,9 +40,11 @@ function FoldersGrid() {
         }
       }
     };
+
     // Set initial value
     handleResize();
     window.addEventListener('resize', handleResize);
+
     // remove event listener when component unmounts
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -59,6 +65,27 @@ function FoldersGrid() {
     }
   }
 
+  const updateFolderName = () => {
+    if (editingFolder && editFolderName.trim()) {
+      const updatedFolders = folders.map(folder =>
+        folder.id === editingFolder.id ? { ...folder, name: editFolderName.trim() } : folder
+      );
+      setFolders(updatedFolders);
+      localStorage.setItem('folders', JSON.stringify(updatedFolders));
+      setEditingFolder(null);
+      setEditFolderName('');
+    }
+  }
+
+  const deleteFolder = () => {
+    if (folderToDelete) {
+      const updatedFolders = folders.filter(folder => folder.id !== folderToDelete);
+      setFolders(updatedFolders);
+      localStorage.setItem('folders', JSON.stringify(updatedFolders));
+      setFolderToDelete(null);
+    }
+  }
+
   // Dynamic columns: 1 for add button + number of folders
   const totalItems = folders.length + 1;
   const columns = Math.min(totalItems, maxColsPerRow);
@@ -71,7 +98,7 @@ function FoldersGrid() {
           gridTemplateColumns: `repeat(${columns}, minmax(14rem, 1fr))`,
           gridAutoFlow: 'row'
         }}>
-          
+        
         {/* Add Button - Always first */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -84,13 +111,11 @@ function FoldersGrid() {
               </Button>
             </div>
           </DialogTrigger>
-
           <DialogContent className='sm:max-w-md'>
             <DialogHeader>
               <DialogTitle>Create New Folder</DialogTitle>
               <DialogDescription>Folders are used to organize related notebooks.</DialogDescription>
             </DialogHeader>
-
             <div className='flex items-center gap-2'>
               <Label htmlFor='folder-name' className='sr-only'>Folder Name</Label>
               <Input 
@@ -101,7 +126,6 @@ function FoldersGrid() {
                 onKeyDown={(e) => e.key === "Enter" && addFolder()}
               />
             </div>
-
             <DialogFooter className='sm:justify-start'>
               <DialogClose asChild>
                 <Button type="button" onClick={addFolder}>
@@ -114,8 +138,54 @@ function FoldersGrid() {
 
         {/* Folders */}
         {folders.map((folder) => (
-          <div key={folder.id} className='flex flex-col items-center justify-center px-10 w-full max-w-56'>
-            {/* Custom Premium Folder Icon */}
+          <div key={folder.id} className='relative flex flex-col items-center justify-center px-10 w-full max-w-56 cursor-pointer group'>
+            {/* 3 Dots Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <MoreVerticalIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => {
+                  setEditingFolder(folder);
+                  setEditFolderName(folder.name);
+                }} className='hover:bg-muted-foreground/90 hover:text-white'>
+                  <EditIcon className="mr-2 h-4 w-4 hover:text-white" />
+                  Rename
+                </DropdownMenuItem>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem 
+                      onSelect={(e) => e.preventDefault()} // Prevent dropdown from closing
+                      className="text-destructive hover:bg-muted-foreground/90 hover:text-white"
+                      onClick={() => setFolderToDelete(folder.id)}
+                    >
+                      <TrashIcon className="mr-2 h-4 w-4 hover:text-white" />
+                      Delete
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Folder will be deleted!</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your folder.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className='hover:bg-muted-foreground/90 hover:text-accent-foreground'>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteFolder}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Custom Folder Icon */}
             <svg
               className="h-16 w-16 mb-2 drop-shadow-md"
               viewBox="0 0 24 24"
@@ -146,6 +216,33 @@ function FoldersGrid() {
           </div>
         ))}
       </div>
+      
+      {/* Edit Folder Dialog */}
+      <Dialog open={!!editingFolder} onOpenChange={() => setEditingFolder(null)}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Rename Folder</DialogTitle>
+            <DialogDescription>Enter a new name for the folder.</DialogDescription>
+          </DialogHeader>
+          <div className='flex items-center gap-2'>
+            <Label htmlFor='edit-folder-name' className='sr-only'>Folder Name</Label>
+            <Input 
+              id='edit-folder-name'
+              value={editFolderName}
+              onChange={(e) => setEditFolderName(e.target.value)}
+              placeholder='Enter folder name'
+              onKeyDown={(e) => e.key === "Enter" && updateFolderName()}
+            />
+          </div>
+          <DialogFooter className='sm:justify-start'>
+            <DialogClose asChild>
+              <Button type="button" onClick={updateFolderName}>
+                Update Folder
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
