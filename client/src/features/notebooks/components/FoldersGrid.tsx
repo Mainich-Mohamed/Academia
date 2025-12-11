@@ -92,7 +92,7 @@ function FoldersGrid() {
   const columns = Math.min(totalItems, maxColsPerRow);
 
   return (
-    <div className='mt-15'>
+    <div className='mt-15 mb-15'>
       <div 
         className="grid gap-6 gap-y-20 justify-items-center"
         style={{
