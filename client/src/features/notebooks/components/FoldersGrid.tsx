@@ -1,5 +1,6 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -93,7 +94,7 @@ function FoldersGrid() {
   return (
     <div className='mt-15'>
       <div 
-        className="grid gap-6 justify-items-center"
+        className="grid gap-6 gap-y-20 justify-items-center"
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(14rem, 1fr))`,
           gridAutoFlow: 'row'
@@ -138,7 +139,7 @@ function FoldersGrid() {
 
         {/* Folders */}
         {folders.map((folder) => (
-          <div key={folder.id} className='relative flex flex-col items-center justify-center px-10 w-full max-w-56 cursor-pointer group'>
+            <div key={folder.id} className='relative flex flex-col items-center justify-center px-10 w-full max-w-56 cursor-pointer group'>
             {/* 3 Dots Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

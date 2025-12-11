@@ -1,6 +1,7 @@
 import React from 'react'
 import ActionButtons from './ActionButtons'
 import FoldersGrid from './FoldersGrid'
+import NotebooksGrid from './NotebooksGrid'
 
 const FoldersList = () => {
   return (
